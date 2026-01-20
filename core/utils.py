@@ -1,5 +1,5 @@
 import re
-from core.canonical_registry import CANONICAL_COMPANIES
+from core.canonical import CANONICAL_COMPANIES
 
 UNKNOWN_LOG_FILE = "unknown_companies.csv"
 

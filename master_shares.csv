@@ -1,0 +1,10 @@
+canonical_company,core_keyword,allowed_suffixes,min_lot,depository
+BSE Investments,bse,"invest,investment,investments,inv",100,NSDL & CDSL
+NSE India,nse,"india,ltd",100,NSDL & CDSL
+Studds Accessories,studds,"helmet,helmets,accessories",25,NSDL & CDSL
+PharmEasy,pharmeasy,"api,holding,holdings",500,NSDL & CDSL
+OYO,oyo,"rooms,oravel",100,NSDL & CDSL
+HDB Financial Services,hdb,"finance,financial,services",25,NSDL & CDSL
+Tata Capital,tata,"capital",25,NSDL & CDSL
+Hexaware Technologies,hexaware,"tech,technologies",25,NSDL & CDSL
+CSK,chennai,"super,kings,csk",250,NSDL & CDSL
