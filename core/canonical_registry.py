@@ -1,5 +1,4 @@
 CANONICAL_COMPANIES = {
-    # ===== CONSUMER / INTERNET =====
     "PharmEasy": [
         "api holdings",
         "api holding",
@@ -7,29 +6,11 @@ CANONICAL_COMPANIES = {
         "pharm easy",
         "api holdings pharmeasy"
     ],
-    "OYO": [
-        "oyo",
-        "oyo rooms",
-        "oravel stays",
-        "oravel"
+    "Studds Accessories": [
+        "studds accessories",
+        "studds helmet",
+        "studds helmets"
     ],
-    "Swiggy": [
-        "swiggy",
-        "swiggy instamart",
-        "bundl technologies"
-    ],
-    "Paytm": [
-        "paytm",
-        "one97 communications"
-    ],
-    "boAt": [
-        "boat",
-        "boat lifestyle",
-        "imagine marketing",
-        "imagine marketing ltd"
-    ],
-
-    # ===== FINANCIAL SERVICES =====
     "Tata Capital": [
         "tata capital",
         "tata capital ltd",
@@ -40,50 +21,31 @@ CANONICAL_COMPANIES = {
         "hdb finance",
         "hdb financial services"
     ],
-    "Motilal Oswal Home Finance": [
-        "motilal oswal home finance",
-        "mo home finance",
-        "mohf"
-    ],
-    "Navi Finserv": [
-        "navi finserv",
-        "navi technologies"
-    ],
-
-    # ===== CAPITAL MARKETS =====
     "NSE India": [
         "nse",
         "nse india",
         "nse india ltd"
     ],
-    "BSE Investments": [
-        "bse investments",
-        "bse investment",
-        "bse investments ltd"
+    "OYO": [
+        "oyo",
+        "oyo rooms",
+        "oravel stays",
+        "oravel"
     ],
-
-    # ===== MANUFACTURING =====
-    "Studds Accessories": [
-        "studds accessories",
-        "studds helmet",
-        "studds helmets"
+    "Swiggy": [
+        "swiggy",
+        "bundl technologies",
+        "swiggy instamart"
     ],
-    "Chennai Super Kings": [
-        "chennai super kings",
-        "csk",
-        "csk cricket"
+    "boAt": [
+        "boat",
+        "boat lifestyle",
+        "imagine marketing",
+        "imagine marketing ltd"
     ],
-    "Hexaware Technologies": [
-        "hexaware",
-        "hexaware technologies",
-        "hexaware tech"
-    ],
-
-    # ===== EDTECH / TECH =====
     "Byju’s": [
         "byjus",
         "byju",
-        "byju’s",
         "think and learn"
     ]
 }

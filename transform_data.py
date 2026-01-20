@@ -1,5 +1,3 @@
-# transform_data.py
-
 import pandas as pd
 from core.utils import resolve_company
 
@@ -28,4 +26,4 @@ final_df = df[[
 
 final_df.to_csv("final_clean_data.csv", index=False)
 
-print("Clean data generated: final_clean_data.csv")
+print("✅ Data cleaned and saved as final_clean_data.csv")
