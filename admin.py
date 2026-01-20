@@ -9,70 +9,29 @@ Features added for deploy readiness:
 """
 
 from datetime import date
-import io
 import logging
 from pathlib import Path
 import re
+import subprocess
+import sys
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Admin – WhatsApp Upload", layout="wide")
-
-st.title("Admin – Price Upload")
-st.caption("Paste raw dealer messages (one per line). The system will convert them to CSV for the pipeline.")
-
-# --------- SIMPLE AUTH (username/password) ---------
-if "admin_authenticated" not in st.session_state:
-    st.session_state.admin_authenticated = False
-
-if not st.session_state.admin_authenticated:
-    st.subheader("Admin Login")
-    _username = st.text_input("Username")
-    _password = st.text_input("Password", type="password")
-    _login_clicked = st.button("Login")
-    if _login_clicked:
-        if _username == "admin" and _password == "admin":
-            st.session_state.admin_authenticated = True
-            st.success("Logged in")
-        else:
-            st.error("Invalid username or password")
-    # stop further rendering for non-authenticated users
-    if not st.session_state.admin_authenticated:
-        st.stop()
-
-# provide a logout button for authenticated users
-if st.button("Logout"):
-    st.session_state.admin_authenticated = False
-    st.success("Logged out")
-
-# ------ Config / Paths ------
-DATA_DIR = Path("data")
-RAW_UPLOAD_PATH = DATA_DIR / "raw_upload.csv"  # path used by transform.py
-BACKUP_DIR = DATA_DIR / "uploads"
-
-for p in (DATA_DIR, BACKUP_DIR):
-    p.mkdir(parents=True, exist_ok=True)
-
 logger = logging.getLogger("admin_upload")
 
-# -------- Admin Input: single text area only --------
-st.markdown("**Paste messages here (one per line).**\n\nOptionally include header lines at the top: `Dealer: NAME` and/or `Date: YYYY-MM-DD`. If absent, dealer will be set to `unknown` and date to today.")
 
-raw_text = st.text_area(
-    "Paste messages here (one per line)",
-    height=360,
-    placeholder=(
-        "Optional header lines (top):\n"
-        "Dealer: Precize\n"
-        "Date: 2026-01-20\n\n"
-        "Then one message per line, e.g.:\n"
-        "BSE Invest @ 1,320\n"
-        "CSK - 4,200\n"
-        "Hexaware Tech 560\n"
-    ),
-)
+def run_transform() -> tuple:
+    """Run transform.py using the same Python executable.
 
-
+    Returns (returncode, stdout, stderr).
+    """
+    try:
+        cmd = [sys.executable, "transform.py"]
+        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=str(Path.cwd()))
+        return proc.returncode, proc.stdout, proc.stderr
+    except Exception as exc:
+        logger.exception("failed to run transform.py: %s", exc)
+        return 1, "", str(exc)
 def _sanitize_price_token(token: str) -> float:
     """Convert a matched price token into a float.
 
@@ -169,46 +128,140 @@ def parse_whatsapp_text(text: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# -------- Convert Button --------
-if st.button("Convert Text to CSV"):
+def main():
+    st.set_page_config(page_title="Admin – Price Upload", layout="wide")
 
-    if not raw_text or not raw_text.strip():
-        st.error("Text is required. Paste messages into the single editor.")
-    else:
-        df = parse_whatsapp_text(raw_text)
+    st.title("Admin – Price Upload")
+    st.caption("Paste raw dealer messages (one per line). The system will convert them to CSV for the pipeline.")
+    # --------- SIMPLE AUTH (username/password) ---------
+    if "admin_authenticated" not in st.session_state:
+        st.session_state.admin_authenticated = False
+    # read credentials from secrets if available (recommended for deployment)
+    admin_user = st.secrets.get("ADMIN_USER", "admin") if hasattr(st, "secrets") else "admin"
+    admin_pass = st.secrets.get("ADMIN_PASS", "admin") if hasattr(st, "secrets") else "admin"
 
-        if df.empty:
-            st.error("No valid data found. Check the format. Each line needs a numeric price.")
+    if not st.session_state.admin_authenticated:
+        st.subheader("Admin Login")
+        _username = st.text_input("Username")
+        _password = st.text_input("Password", type="password")
+        _login_clicked = st.button("Login")
+        if _login_clicked:
+            if _username == admin_user and _password == admin_pass:
+                st.session_state.admin_authenticated = True
+                st.success("Logged in")
+            else:
+                st.error("Invalid username or password")
+        # stop further rendering for non-authenticated users
+        if not st.session_state.admin_authenticated:
+            st.stop()
+
+    # provide a logout button for authenticated users
+    if st.button("Logout"):
+        st.session_state.admin_authenticated = False
+        st.success("Logged out")
+
+
+    # ------ Config / Paths ------
+    DATA_DIR = Path("data")
+    RAW_UPLOAD_PATH = DATA_DIR / "raw_upload.csv"  # path used by transform.py
+    BACKUP_DIR = DATA_DIR / "uploads"
+
+    for p in (DATA_DIR, BACKUP_DIR):
+        p.mkdir(parents=True, exist_ok=True)
+
+    # -------- Admin Input: single text area only --------
+    st.markdown("**Paste messages here (one per line).**\n\nOptionally include header lines at the top: `Dealer: NAME` and/or `Date: YYYY-MM-DD`. If absent, dealer will be set to `unknown` and date to today.")
+
+    raw_text = st.text_area(
+        "Paste messages here (one per line)",
+        height=360,
+        placeholder=(
+            "Optional header lines (top):\n"
+            "Dealer: Precize\n"
+            "Date: 2026-01-20\n\n"
+            "Then one message per line, e.g.:\n"
+            "BSE Invest @ 1,320\n"
+            "CSK - 4,200\n"
+            "Hexaware Tech 560\n"
+        ),
+    )
+
+    # -------- Submit button (no form) --------
+    st.write("When ready, click Submit to parse, save and run the transformation pipeline.")
+    if st.button("Submit"):
+        if not raw_text or not raw_text.strip():
+            st.error("Text is required. Paste messages into the single editor.")
         else:
-            # create a timestamped backup filename
-            ts = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            # pick dealer from parsed rows for a safe filename (fallback to 'unknown')
-            dealer_for_filename = df["Dealer"].iloc[0] if ("Dealer" in df.columns and not df["Dealer"].isnull().all()) else "unknown"
-            safe_dealer = re.sub(r"[^a-z0-9_-]", "_", str(dealer_for_filename).lower())[:40]
-            backup_name = f"raw_upload_{safe_dealer}_{ts}.csv"
+            df = parse_whatsapp_text(raw_text)
 
-            try:
-                # canonical pipeline file (used by transform.py) - overwrite
-                df.to_csv(RAW_UPLOAD_PATH, index=False)
+            if df.empty:
+                st.error("No valid data found. Check the format. Each line needs a numeric price.")
+            else:
+                # create a timestamped backup filename
+                ts = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
+                # pick dealer from parsed rows for a safe filename (fallback to 'unknown')
+                dealer_for_filename = df["Dealer"].iloc[0] if ("Dealer" in df.columns and not df["Dealer"].isnull().all()) else "unknown"
+                safe_dealer = re.sub(r"[^a-z0-9_-]", "_", str(dealer_for_filename).lower())[:40]
+                backup_name = f"raw_upload_{safe_dealer}_{ts}.csv"
 
-                # also save a timestamped backup copy for audit
-                backup_path = BACKUP_DIR / backup_name
-                df.to_csv(backup_path, index=False)
+                try:
+                    # canonical pipeline file (used by transform.py) - overwrite
+                    df.to_csv(RAW_UPLOAD_PATH, index=False)
 
-                st.success(f"Text converted and saved to `{RAW_UPLOAD_PATH}`")
-                st.info(f"Backup saved to: `{backup_path}`")
+                    # also save a timestamped backup copy for audit
+                    backup_path = BACKUP_DIR / backup_name
+                    df.to_csv(backup_path, index=False)
 
-                st.subheader("Preview")
-                st.dataframe(df, width="stretch")
+                    # store result in session state so we can show download button and run transform
+                    st.session_state["last_upload"] = {
+                        "ts": ts,
+                        "raw_path": str(RAW_UPLOAD_PATH),
+                        "backup_path": str(backup_path),
+                    }
+                    st.session_state["last_df"] = df
+                    st.session_state["transform_pending"] = True
 
-                csv_bytes = df.to_csv(index=False).encode("utf-8")
-                st.download_button(
-                    label="Download Parsed CSV",
-                    data=csv_bytes,
-                    file_name=f"parsed_upload_{ts}.csv",
-                    mime="text/csv",
-                )
+                    st.success("Text parsed and saved. Preview and transform will appear below.")
 
-            except Exception as exc:
-                logger.exception("failed to save uploaded CSV")
-                st.error(f"Failed to save CSV: {exc}")
+                except Exception as exc:
+                    logger.exception("failed to save uploaded CSV")
+                    st.error(f"Failed to save CSV: {exc}")
+
+    # (Removed duplicate fallback submit button — only the primary Submit remains)
+
+    # -------- Post-submit UI (outside form) --------
+    # Show preview, download button and run transform after form has been submitted.
+    if "last_df" in st.session_state:
+        df = st.session_state["last_df"]
+        info = st.session_state.get("last_upload", {})
+
+        st.markdown("---")
+        st.success(f"Saved to `{info.get('raw_path', '')}` (backup: `{info.get('backup_path', '')}`)")
+        st.subheader("Preview")
+        st.dataframe(df, width="stretch")
+
+        csv_bytes = df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="Download Parsed CSV",
+            data=csv_bytes,
+            file_name=f"parsed_upload_{info.get('ts', '')}.csv",
+            mime="text/csv",
+        )
+
+        # run transform if requested
+        if st.session_state.get("transform_pending"):
+            st.info("Running transform.py to produce final clean data...")
+            code, out, err = run_transform()
+            if code == 0:
+                st.success("transform.py completed successfully")
+                if out:
+                    st.text(out)
+            else:
+                st.error(f"transform.py failed (exit {code}). See logs below:")
+                if err:
+                    st.text(err)
+            st.session_state["transform_pending"] = False
+
+
+if __name__ == "__main__":
+    main()

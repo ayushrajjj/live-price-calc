@@ -1,6 +1,43 @@
 import streamlit as st
 import pandas as pd
 from datetime import date
+import streamlit.components.v1 as components
+
+# If someone visits /admin (path), redirect client-side to add ?admin=1 so the app handles it
+components.html(
+        """
+        <script>
+        (function(){
+            try {
+                const p = window.location.pathname || '/';
+                // normalize trailing slash
+                if (p.endsWith('/')) {
+                    // remove trailing slash for comparison
+                }
+                if (p.endsWith('/admin') && !window.location.search.includes('admin=')) {
+                    const newUrl = window.location.pathname + window.location.search + (window.location.search ? '&' : '?') + 'admin=1';
+                    window.location.replace(newUrl);
+                }
+            } catch (e) {
+                // noop
+            }
+        })();
+        </script>
+        """,
+        height=0,
+)
+
+# Allow direct access to admin page via query param, e.g. ?admin=1
+params = st.experimental_get_query_params()
+if "admin" in params:
+    # Import and call the admin page directly
+    try:
+        from admin import main as admin_main
+        admin_main()
+        st.stop()
+    except Exception as exc:
+        st.error(f"Failed to open admin page from query param: {exc}")
+        st.stop()
 
 # ---------------- PAGE CONFIG (MUST BE FIRST) ----------------
 st.set_page_config(page_title="Unlisted Share Prices", layout="wide")
@@ -17,6 +54,12 @@ if st.session_state.page == "market":
 
     st.title("Unlisted Share Prices – Market View")
     st.caption("Dealer-reported prices only.")
+
+    # Small admin link for convenience (opens admin page in a new tab)
+    st.markdown(
+        '<p style="text-align:right"><a href="?admin=1" target="_blank">Open Admin Panel</a></p>',
+        unsafe_allow_html=True,
+    )
 
     # ---- SEARCH (ONLY ON MARKET PAGE) ----
     search = st.text_input("Search company (e.g. bse, studds, pharmeasy)")
