@@ -1,0 +1,70 @@
+dealer,share_name,price,date
+Dealer A,API Holdings Ltd,3200,2026-01-20
+Dealer B,API Holding Pre IPO,3150,2026-01-20
+Dealer C,API Unlisted Share,3300,2026-01-20
+Dealer D,API Holdings,3180,2026-01-20
+
+Dealer A,Tata Capital Ltd,1020,2026-01-20
+Dealer B,Tata Capital Unlisted,990,2026-01-20
+Dealer C,Tata Capital Pre IPO,1050,2026-01-20
+Dealer D,Tata Capital,1010,2026-01-20
+
+Dealer A,HDB Financial Services Ltd,860,2026-01-20
+Dealer B,HDB Finance Pre IPO,840,2026-01-20
+Dealer C,HDB Financial Unlisted,890,2026-01-20
+Dealer D,HDB Finance,850,2026-01-20
+
+Dealer A,NSE India Ltd,3500,2026-01-20
+Dealer B,NSE Unlisted Share,3450,2026-01-20
+Dealer C,NSE India Pre IPO,3600,2026-01-20
+Dealer D,NSE,3480,2026-01-20
+
+Dealer A,Chennai Super Kings Ltd,190,2026-01-20
+Dealer B,CSK Unlisted,185,2026-01-20
+Dealer C,CSK Pre IPO,200,2026-01-20
+Dealer D,Chennai Super Kings,188,2026-01-20
+
+Dealer A,BSE Investments Ltd,1150,2026-01-20
+Dealer B,BSE Investment Unlisted,1100,2026-01-20
+Dealer C,BSE Invest Pre IPO,1200,2026-01-20
+Dealer D,BSE Investments,1130,2026-01-20
+
+Dealer A,Hexaware Technologies Ltd,720,2026-01-20
+Dealer B,Hexaware Tech Unlisted,700,2026-01-20
+Dealer C,Hexaware Pre IPO,750,2026-01-20
+Dealer D,Hexaware Technologies,710,2026-01-20
+
+Dealer A,Imagine Marketing Ltd,540,2026-01-20
+Dealer B,boAt Company Unlisted,520,2026-01-20
+Dealer C,Imagine Marketing Pre IPO,580,2026-01-20
+Dealer D,boAt Lifestyle,535,2026-01-20
+
+Dealer A,Motilal Oswal Home Finance Ltd,92,2026-01-20
+Dealer B,MO Home Finance Unlisted,88,2026-01-20
+Dealer C,Motilal Home Finance Pre IPO,97,2026-01-20
+Dealer D,MOHF,90,2026-01-20
+
+Dealer A,PayMate India Ltd,68,2026-01-20
+Dealer B,PayMate Unlisted,65,2026-01-20
+Dealer C,PayMate Pre IPO,72,2026-01-20
+Dealer D,PayMate India,67,2026-01-20
+
+Dealer A,Studds Accessories Ltd,510,2026-01-20
+Dealer B,Studds Helmet Unlisted,495,2026-01-20
+Dealer C,Studds Pre IPO,530,2026-01-20
+Dealer D,Studds Accessories,505,2026-01-20
+
+Dealer A,PharmEasy Ltd,58,2026-01-20
+Dealer B,Pharm Easy Unlisted,55,2026-01-20
+Dealer C,PharmEasy Pre IPO,62,2026-01-20
+Dealer D,API Holdings PharmEasy,57,2026-01-20
+
+Dealer A,OYO Hotels Ltd,42,2026-01-20
+Dealer B,OYO Unlisted Share,40,2026-01-20
+Dealer C,OYO Pre IPO,46,2026-01-20
+Dealer D,OYO Rooms,41,2026-01-20
+
+Dealer A,Swiggy Ltd,380,2026-01-20
+Dealer B,Swiggy Unlisted,365,2026-01-20
+Dealer C,Swiggy Pre IPO,395,2026-01-20
+Dealer D,Swiggy Instamart Parent,372,2026-01-20
